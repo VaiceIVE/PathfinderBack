@@ -1,4 +1,4 @@
-
+const db = require('../db')
 
 
 class dataController
@@ -44,6 +44,29 @@ class dataController
                 }
             ]
         )
+    }
+    async getTokenData(req, res)
+    {
+        const token = req.params.token;
+        const data = await db.query("SELECT * FROM data WHERE token = $1", [token]);
+        console.log(data.rows);
+        res.json(data.rows);
+    }
+
+    async getAllData(req, res)
+    {
+        const data = await db.query("SELECT * FROM data");
+        console.log(data.rows);
+        res.json(data.rows);
+    }
+
+    async getExactTokenData(req, res)
+    {
+        const {token, requirements} = req.body;
+        console.log(req.body)
+        const data = await db.query("SELECT * FROM data WHERE token = $1", [token]);
+        console.log(data.rows);
+        res.json(data.rows);
     }
 }
 
