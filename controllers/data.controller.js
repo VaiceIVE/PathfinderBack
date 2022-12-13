@@ -53,22 +53,39 @@ class dataController
         res.json(data.rows);
     }
 
-    async getAllData(req, res)
-    {
-        const data = await db.query("SELECT * FROM data");
-        console.log(data.rows);
-        res.json(data.rows);
-    }
-
     async getExactTokenData(req, res)
     {
-        const {token, requirements} = req.body;
-        console.log(req.body)
-        const data = await db.query("SELECT * FROM data WHERE token = $1", [token]);
-        console.log(data.rows);
-        res.json(data.rows);
+        console.log(req.body);
+        const token = req.body.token;
+        const requirements = req.body.requirements;
+        console.log(Object.keys(requirements))
+        const data = (await db.query("SELECT * FROM data WHERE token = $1", [token])).rows;
+        var resp = Array();
+        for (var i = 0; i < data.length; i++)
+        {
+            const elem = data[i]
+            console.log(elem);
+            var ok = true;
+            for(var j = 0; j < Object.keys(requirements).length; j++)
+            {
+                const key = Object.keys(requirements)[j]
+                console.log(key);
+                if (requirements[key] != elem.data[key])
+                {
+                    console.log(requirements[key]);
+                    console.log(elem.data[key]);
+                    ok = false;
+                }
+            }
+            if(ok)
+            {
+                resp.push(elem)
+            }
+        }
+        res.json(resp);
     }
 }
+
 
 
 module.exports = new dataController()
